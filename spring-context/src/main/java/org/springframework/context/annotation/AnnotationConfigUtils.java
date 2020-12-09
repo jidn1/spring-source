@@ -160,6 +160,20 @@ public abstract class AnnotationConfigUtils {
 
 		Set<BeanDefinitionHolder> beanDefs = new LinkedHashSet<>(8);
 
+		//注册Spring内置的多个Bean
+		/**
+		 * 1. 判断容器中是否已经存在了ConfigurationClassPostProcessor Bean
+		 * 2. 如果不存在（当然这里肯定是不存在的），就通过RootBeanDefinition的构造方法获得 ConfigurationClassPostProcessor的BeanDefinition，RootBeanDefinition是BeanDefinition的子类
+		 * 3. 执行registerPostProcessor方法，registerPostProcessor方法内部就是注册Bean，当然这里注册 其他Bean也是一样的流程。
+		 */
+
+		//TODO  这里会一连串注册好几个Bean，在这其中最重要的一个Bean（没有之一）就是 BeanDefinitionRegistryPostProcessor
+		//  ConfigurationClassPostProcessor实现BeanDefinitionRegistryPostProcessor接口，
+		//  BeanDefinitionRegistryPostProcessor接口又扩展了BeanFactoryPostProcessor接口，
+		//  BeanFactoryPostProcessor是Spring的扩展点之一，
+		//  ConfigurationClassPostProcessor是Spring极 为重要的一个类，
+		//  除了注册了ConfigurationClassPostProcessor，还注册了其他Bean，
+		//  其他Bean也都实现了其他接口，比 如BeanPostProcessor等。 BeanPostProcessor接口也是Spring的扩展点之一
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
 			def.setSource(source);
@@ -209,6 +223,15 @@ public abstract class AnnotationConfigUtils {
 		return beanDefs;
 	}
 
+	/**
+	 * 这方法为BeanDefinition设置了一个Role，
+	 * ROLE_INFRASTRUCTURE 代表这是spring内部的，
+	 * 并非用户定 义的，然后又调用了registerBeanDefinition方法，
+	 * 再点进去，你会发现它是一个接口，直接点进去，
+	 * 首先要知道registry实现类是什么，
+	 * 那么它的实现是什么呢？
+	 * 答案是 DefaultListableBeanFactory
+	 */
 	private static BeanDefinitionHolder registerPostProcessor(
 			BeanDefinitionRegistry registry, RootBeanDefinition definition, String beanName) {
 

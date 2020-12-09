@@ -55,8 +55,10 @@ import org.springframework.util.Assert;
  */
 public class AnnotationConfigApplicationContext extends GenericApplicationContext implements AnnotationConfigRegistry {
 
+	//注解bean定义读取器，主要作用是用来读取被注解的了bean
 	private final AnnotatedBeanDefinitionReader reader;
 
+	//扫描器，它仅仅是在我们外部手动调用 .scan 等方法才有用，常规方式是不会用到scanner对象的
 	private final ClassPathBeanDefinitionScanner scanner;
 
 
@@ -77,7 +79,11 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 */
 	public AnnotationConfigApplicationContext(DefaultListableBeanFactory beanFactory) {
 		super(beanFactory);
+		//会隐式调用父类的构造方法，初始化DefaultListableBeanFactory
+		//初始化一个Bean读取器
 		this.reader = new AnnotatedBeanDefinitionReader(this);
+
+		//初始化一个扫描器，它仅仅是在我们外部手动调用 .scan 等方法才有用，常规方式是不会用到scanner对象的
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
 
@@ -87,9 +93,28 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * @param componentClasses one or more component classes &mdash; for example,
 	 * {@link Configuration @Configuration} classes
 	 */
+	/**
+	 * 我们先来为构造方法做一个简单的说明：
+	 * 1. 这是一个有参的构造方法，可以接收多个配置类，不过一般情况下，只会传入一个配置类。
+	 * 2. 这个配置类有两种情况，一种是传统意义上的带上@Configuration注解的配置类，还有一种是没有 带上@Configuration，
+	 * 但是带有 @Component，@Import，@ImportResouce，@Service，
+	 * @ComponentScan 等注解的配置类，在Spring内部把前者称为Full配置类，把后者称之为Lite配置 类。
+	 * 在本源码分析中，有些地方也把Lite配置类称为普通Bean
+	 */
+	//根据参数类型可以知道，其实可以传入多个annotatedClasses，但是这种情况出现的比较少
 	public AnnotationConfigApplicationContext(Class<?>... componentClasses) {
+		//调用无参构造函数，会先调用父类GenericApplicationContext的构造函数
+		//父类的构造函数里面就是初始化DefaultListableBeanFactory，并且赋值给beanFactory
+		//本类的构造函数里面，初始化了一个读取器：AnnotatedBeanDefinitionReader read，一个扫描器ClassPathBeanDefi nitionScanner scanner
+		//scanner的用处不是很大，它仅仅是在我们外部手动调用 .scan 等方法才有用，常规方式是不会用到scanner对象的
 		this();
+		//把传入的类进行注册，这里有两个情况，
+		//传入传统的配置类
+		//传入bean（虽然一般没有人会这么做
+		//看到后面会知道spring把传统的带上@Configuration的配置类称之为FULL配置类，不带@Configuration的称之为Lite配 置类
+		//但是我们这里先把带上@Configuration的配置类称之为传统配置类，不带的称之为普通bean
 		register(componentClasses);
+		//刷新
 		refresh();
 	}
 

@@ -38,6 +38,15 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.beans.factory.support.RootBeanDefinition
  * @see org.springframework.beans.factory.support.ChildBeanDefinition
  */
+
+/**
+ * BeanMetadataElement接口：BeanDefinition元数据，返回该Bean的来源
+ * AttributeAccessor接口：提供对BeanDefinition属性操作能力，
+ *
+ * 它是用来描述Bean的，里面存放着关于Bean的一系列信息，比如Bean的作用域，Bean所对应的Class，
+ * 是 否懒加载，是否Primary等等，
+ * 这个BeanDefinition也相当重要，我们以后会常常和它打交道。
+ */
 public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**

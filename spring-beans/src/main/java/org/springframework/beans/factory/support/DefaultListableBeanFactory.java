@@ -972,6 +972,15 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	// Implementation of BeanDefinitionRegistry interface
 	//---------------------------------------------------------------------
 
+	/**
+	 * 从这里可以看出DefaultListableBeanFactory就是我们所说的容器了，
+	 * 里面放着 beanDefinitionMap， beanDefinitionNames，
+	 * beanDefinitionMap 是一个 hashMap，beanName 作为 Key, beanDefinition 作为 Value，
+	 * beanDefinitionNames 是一个集合，里面存放了 beanName。
+	 *
+	 *  DefaultListableBeanFactory 中的 beanDefinitionMap，beanDefinitionNames 也是相当重要的，
+	 *  以后会经常看到它，最好看到它，第一时间就可以反应出它里面放了什么数据
+	 */
 	@Override
 	public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition)
 			throws BeanDefinitionStoreException {
@@ -1016,6 +1025,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 							"] with [" + beanDefinition + "]");
 				}
 			}
+
 			this.beanDefinitionMap.put(beanName, beanDefinition);
 		}
 		else {
@@ -1032,7 +1042,12 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 			else {
 				// Still in startup registration phase
+				// todo
+				//beanDefinitionMap 是 Map<String, BeanDefinition>，
+				//这里就是把beanName作为key，ScopedProxyMode作为value，推到map里面
 				this.beanDefinitionMap.put(beanName, beanDefinition);
+
+				//beanDefinitionNames就是一个List<String>,这里就是把beanName放到List中去
 				this.beanDefinitionNames.add(beanName);
 				removeManualSingletonName(beanName);
 			}
