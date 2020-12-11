@@ -578,7 +578,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				//todo 注册BeanPostProcessor
+				// AutowiredAnnotationBeanPostProcessor(处理被@Autowired注解修饰的bean并注入)
+				// RequiredAnnotationBeanPostProcessor(处理被@Required注解修饰的方法)
+				// CommonAnnotationBeanPostProcessor(处理@PreDestroy、@PostConstruct、@Resource等多个注解的作用)等。
 				registerBeanPostProcessors(beanFactory);
+
 				beanPostProcess.end();
 
 				//todo 初始化上下文消息源.
